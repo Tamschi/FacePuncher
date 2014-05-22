@@ -1,5 +1,6 @@
 ﻿/* Copyright (C) 2014 James King (metapyziks@gmail.com)
  * Copyright (C) 2014 Tamme Schichler (tammeschichler@googlemail.com)
+ * Copyright (C) 2014 Saša Barišić (cartman300@net.hr)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,12 +18,15 @@
  * USA
  */
 
-using FacePuncher.Geometry;
-using FacePuncher.Graphics;
-using FacePuncher.UI;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.IO;
+using System.Reflection;
+
+using FacePuncher.Geometry;
+using FacePuncher.Graphics;
+using FacePuncher.UI;
 
 namespace FacePuncher
 {
@@ -47,16 +51,21 @@ namespace FacePuncher
         /// <param name="args">An array of command line arguments.</param>
         public static void Main(string[] args)
         {
-            var context = new SynchronizationContext();
-            context.Send((x) => TaskMain().Wait(), null);
+            try {
+                var context = new SynchronizationContext();
+                context.Send((x) => TaskMain().Wait(), null);
+            } catch (AggregateException E) {
+                throw E.InnerException;
+            }
         }
 
         static async Task TaskMain()
         {
-            // TODO: Use a sane non-development specific path.
-            Definitions.LoadFromDirectory("../../../Data", DefinitionsNamespace.Client);
+            Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
 
-            Display.Initialize(96, 32);
+            Definitions.LoadFromDirectory("Data", DefinitionsNamespace.Client);
+
+            Interface.Display.Initialize(96, 32);
 
             ServerConnection server = null;
 
@@ -76,24 +85,18 @@ namespace FacePuncher
             UIManager.AddChild(select);
             UIManager.CalculateSelectableWidgets();
 
-            while (true)
-            {
-                if (server == null)
-                {
+            Direction direc = Direction.None;
+
+            while (true) {
+                if (server == null) {
                     Draw(null);
                     await Task.Delay(100);
-                }
-                else if (Console.KeyAvailable)
-                {
-                    Direction direc = Direction.None;
-                    if (Input.TryReadMovement(out direc)) {
-                        server.SendIntent(new MoveIntent(direc));
-                    }
-                }
-                else
-                {
+                } else if (Interface.Input.TryReadMovement(out direc)) {
+                    server.SendIntent(new MoveIntent(direc));
+                } else {
                     await Task.Delay(100);
                 }
+
                 await Task.Yield();
             }
         }
@@ -102,12 +105,12 @@ namespace FacePuncher
         static int _flash = 0;
         internal static void Draw(ServerConnection server)
         {
-            Display.Clear();
+            Interface.Display.Clear();
 
             if (server != null) {
                 // removed Level lock
                 var attribs = new DrawAttributes(_flash++);
-                var rect = Display.Rect + server.PlayerPosition - Display.Center;
+                var rect = Interface.Display.Rect + server.PlayerPosition - Interface.Display.Center;
 
                 foreach (var vis in server.Visibility) {
                     vis.Draw(rect, Position.Zero, attribs, server.Time);
@@ -118,7 +121,7 @@ namespace FacePuncher
             if (UIManager != null)
                 UIManager.Draw();
 
-            Display.Refresh();
+            Interface.Display.Refresh();
         }
     }
 }

@@ -61,6 +61,14 @@ namespace FacePuncher.Geometry
         }
 
         /// <summary>
+        /// Gets the manhattan distance from the origin to this position.
+        /// </summary>
+        public int ManhattanLength
+        {
+            get { return Math.Abs(X) + Math.Abs(Y); }
+        }
+
+        /// <summary>
         /// Initializes a new position structure with the given coordinates.
         /// </summary>
         /// <param name="x">Horizontal component of the position.</param>
@@ -114,9 +122,29 @@ namespace FacePuncher.Geometry
             return new Position(a.X + b.X, a.Y + b.Y);
         }
 
+        public static Position operator +(Position P, int[] Sz)
+        {
+            return new Position(P.X + Sz[0], P.Y + Sz[1]);
+        }
+
+        public static Position operator +(Position P, int I)
+        {
+            return P + new[] { I, 0 };
+        }
+
         public static Position operator -(Position a, Position b)
         {
             return new Position(a.X - b.X, a.Y - b.Y);
+        }
+
+        public static Position operator -(Position P, int[] Sz)
+        {
+            return new Position(P.X - Sz[0], P.Y - Sz[1]);
+        }
+
+        public static Position operator -(Position P, int I)
+        {
+            return P - new[] { I, 0 };
         }
 
         public static Position operator *(Position pos, int mul)

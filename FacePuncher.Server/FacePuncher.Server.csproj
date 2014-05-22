@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -26,7 +26,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -34,6 +34,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Net" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -50,9 +51,21 @@
     <Compile Include="Entities\PlayerControl.cs" />
     <Compile Include="Entities\StaticDrawable.cs" />
     <Compile Include="Entities\VerminControl.cs" />
+    <Compile Include="Geometry\EntitySelector.cs" />
+    <Compile Include="Geometry\EntitySelectors\Default.cs" />
+    <Compile Include="Generator.cs" />
+    <Compile Include="Geometry\ItemGenerator.cs" />
+    <Compile Include="Geometry\ItemPlacement.cs" />
+    <Compile Include="Geometry\ItemPlacements\Default.cs" />
     <Compile Include="Geometry\Level.cs" />
     <Compile Include="Geometry\LevelGenerator.cs" />
     <Compile Include="Geometry\Room.cs" />
+    <Compile Include="Geometry\RoomGenerator.cs" />
+    <Compile Include="Geometry\RoomInfo.cs" />
+    <Compile Include="Geometry\RoomLayout.cs" />
+    <Compile Include="Geometry\RoomLayouts\Default.cs" />
+    <Compile Include="Geometry\RoomPlacement.cs" />
+    <Compile Include="Geometry\RoomPlacements\Default.cs" />
     <Compile Include="Geometry\RoomVisibility.cs" />
     <Compile Include="Geometry\Tile.cs" />
     <Compile Include="Program.cs" />
@@ -66,6 +79,20 @@
       <Project>{4e2355af-f51d-4913-9eb0-845eb7759bb3}</Project>
       <Name>FacePuncher.Shared</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Data\debris.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\generation\level.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\player.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\vermin.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

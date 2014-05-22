@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FacePuncher", "FacePuncher\FacePuncher.csproj", "{D420FA6C-37CD-4041-B9F2-E57D0BD671FA}"
 EndProject
@@ -9,19 +9,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FacePuncher.Server", "FaceP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FacePuncher.Shared", "FacePuncher.Shared\FacePuncher.Shared.csproj", "{4E2355AF-F51D-4913-9EB0-845EB7759BB3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{5E114733-71D0-4A55-A508-2DA1B034BFDC}"
-	ProjectSection(SolutionItems) = preProject
-		Data\debris.xml = Data\debris.xml
-		Data\player.xml = Data\player.xml
-		Data\vermin.xml = Data\vermin.xml
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2F1A9C93-CC57-420F-B47D-8FBB8ED5203D}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.Config = .nuget\NuGet.Config
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FacePuncher.Win32Console", "FacePuncher.Win32Console\FacePuncher.Win32Console.csproj", "{FF159D0D-4DA7-4D24-AB72-D2077EF1729F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FacePuncher.CartConsole", "FacePuncher.CartConsole\FacePuncher.CartConsole.csproj", "{C8DE2059-24EE-4AB3-859F-E8F829E2AF19}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +38,14 @@ Global
 		{4E2355AF-F51D-4913-9EB0-845EB7759BB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E2355AF-F51D-4913-9EB0-845EB7759BB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E2355AF-F51D-4913-9EB0-845EB7759BB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF159D0D-4DA7-4D24-AB72-D2077EF1729F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF159D0D-4DA7-4D24-AB72-D2077EF1729F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF159D0D-4DA7-4D24-AB72-D2077EF1729F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF159D0D-4DA7-4D24-AB72-D2077EF1729F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8DE2059-24EE-4AB3-859F-E8F829E2AF19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8DE2059-24EE-4AB3-859F-E8F829E2AF19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8DE2059-24EE-4AB3-859F-E8F829E2AF19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8DE2059-24EE-4AB3-859F-E8F829E2AF19}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

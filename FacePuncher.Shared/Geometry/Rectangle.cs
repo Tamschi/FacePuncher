@@ -108,6 +108,14 @@ namespace FacePuncher.Geometry
         }
 
         /// <summary>
+        /// Area of the rectangle.
+        /// </summary>
+        public int Area
+        {
+            get { return Width * Height; }
+        }
+
+        /// <summary>
         /// Initializes a new rectangle structure based on the
         /// positions of its upper left and lower right vertices.
         /// </summary>
@@ -135,6 +143,12 @@ namespace FacePuncher.Geometry
             Top = y;
             Width = w;
             Height = h;
+        }
+
+        public bool IsAdjacent(Rectangle rect)
+        {
+            return (this.Left == rect.Right || rect.Left == this.Right)
+                != (this.Top == rect.Bottom || rect.Top == this.Bottom);
         }
 
         /// <summary>
@@ -174,7 +188,7 @@ namespace FacePuncher.Geometry
         /// otherwise the zero rectangle.</returns>
         public Rectangle Intersection(Rectangle rect)
         {
-            if (!Intersects(rect)) return Rectangle.Zero;
+            if (!Intersects(rect) && !IsAdjacent(rect)) return Rectangle.Zero;
 
             var tl = new Position(
                 Math.Max(this.Left, rect.Left),
@@ -183,6 +197,29 @@ namespace FacePuncher.Geometry
             var br = new Position(
                 Math.Min(this.Right, rect.Right),
                 Math.Min(this.Bottom, rect.Bottom));
+
+            return new Rectangle(tl, br);
+        }
+
+        /// <summary>
+        /// Finds the smallest rectangle that encloses both this
+        /// instance and another given rectangle.
+        /// </summary>
+        /// <param name="rect">Rectangle to find the union of.</param>
+        /// <returns>A rectangle that encloses both this instance and
+        /// the given rectangle.</returns>
+        public Rectangle Union(Rectangle rect)
+        {
+            if (Area == 0) return rect;
+            if (rect.Area == 0) return this;
+
+            var tl = new Position(
+                Math.Min(this.Left, rect.Left),
+                Math.Min(this.Top, rect.Top));
+
+            var br = new Position(
+                Math.Max(this.Right, rect.Right),
+                Math.Max(this.Bottom, rect.Bottom));
 
             return new Rectangle(tl, br);
         }

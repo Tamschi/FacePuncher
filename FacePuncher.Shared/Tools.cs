@@ -22,32 +22,80 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using System.Net.Sockets;
+using System.Threading.Tasks;
+using System.Diagnostics;
 
 using FacePuncher.Geometry;
 using FacePuncher.Network;
-using System.Net.Sockets;
-using System.Threading.Tasks;
 
 namespace FacePuncher
 {
     public static class Tools
     {
+        private static Stopwatch SWatch;
+
+        static Tools()
+        {
+            SWatch = new Stopwatch();
+            SWatch.Start();
+        }
+
         public static readonly Random Random = new Random();
 
         public static readonly Direction[] Directions = new[] {
-            Direction.NorthWest, Direction.North, Direction.NorthEast,
-            Direction.West, Direction.East,
-            Direction.SouthWest, Direction.South, Direction.SouthEast
+            Direction.East,
+            Direction.South,
+            Direction.West,
+            Direction.North,
+            Direction.SouthEast,
+            Direction.SouthWest,
+            Direction.NorthWest,
+            Direction.NorthEast
+        };
+
+        public static readonly Direction[] CardinalDirections = new[] {
+            Direction.East,
+            Direction.South,
+            Direction.West,
+            Direction.North
         };
 
         public static Position GetOffset(this Direction dir)
         {
-            return new Position(((int) dir) % 3 - 1, ((int) dir) / 3 - 1);
+            var offset = Position.Zero;
+            if ((dir & Direction.East)  == Direction.East)  offset += Position.UnitX;
+            if ((dir & Direction.South) == Direction.South) offset += Position.UnitY;
+            if ((dir & Direction.West)  == Direction.West)  offset -= Position.UnitX;
+            if ((dir & Direction.North) == Direction.North) offset -= Position.UnitY;
+            return offset;
+        }
+
+        public static double CurTime()
+        {
+            return SWatch.Elapsed.TotalSeconds;
+        }
+
+        public static Direction Left(this Direction dir)
+        {
+            int val = (int) dir;
+            return (Direction) (((val << 3) | (val >> 1)) & 0xf);
+        }
+
+        public static Direction Right(this Direction dir)
+        {
+            int val = (int) dir;
+            return (Direction) (((val << 1) | (val >> 3)) & 0xf);
         }
 
         public static bool HasElement(this XElement elem, XName name)
         {
             return elem.Elements(name).Count() > 0;
+        }
+
+        public static bool HasAttribute(this XElement elem, XName name)
+        {
+            return elem.Attributes(name).Count() > 0;
         }
 
         public static T Element<T>(this XElement elem, XName name)
@@ -118,6 +166,126 @@ namespace FacePuncher
             var backColor = (ConsoleColor)(color >> 4);
 
             return Tuple.Create(symbol, foreColor, backColor);
+        }
+
+        public static float NextFloat(this Random rand)
+        {
+            return (float) rand.NextDouble();
+        }
+
+        public static float NextFloat(this Random rand, float max)
+        {
+            return (float) rand.NextDouble() * max;
+        }
+
+        public static float NextFloat(this Random rand, float min, float max)
+        {
+            return min + (float) rand.NextDouble() * (max - min);
+        }
+
+        private class NodeInfo<T>
+        {
+            private float _heuristic;
+
+            public T Node { get; private set; }
+            public Position Pos { get; private set; }
+            public NodeInfo<T> Prev { get; private set; }
+            public int Depth { get; private set; }
+            public float Cost { get; private set; }
+            public float Total { get; private set; }
+
+            public float Heuristic
+            {
+                get { return _heuristic; }
+                set
+                {
+                    _heuristic = value;
+                    Total = Cost + value;
+                }
+            }
+
+            public NodeInfo(T node, Position pos)
+            {
+                Node = node;
+                Pos = pos;
+                Prev = null;
+                Depth = 0;
+                Cost = 0f;
+            }
+
+            public NodeInfo(T node, Position pos, NodeInfo<T> prev, float costAdd)
+            {
+                Node = node;
+                Pos = pos;
+                Prev = prev;
+                Depth = prev.Depth + 1;
+                Cost = prev.Cost + costAdd;
+            }
+
+            public void CalculateHeuristic(Position target)
+            {
+                Heuristic = (target - Pos).ManhattanLength;
+            }
+        }
+
+        public static T[] AStar<T>(T origin, T target,
+            Func<T, IEnumerable<Tuple<T, int>>> adjFunc, Func<T, Position> posFunc)
+        {
+            var open = new List<NodeInfo<T>>();
+            var clsd = new HashSet<NodeInfo<T>>();
+
+            var targPos = posFunc(target);
+
+            var first = new NodeInfo<T>(origin, posFunc(origin));
+            first.CalculateHeuristic(targPos);
+
+            open.Add(first);
+
+            while (open.Count > 0) {
+                NodeInfo<T> cur = null;
+                foreach (var node in open) {
+                    if (cur == null || node.Total < cur.Total) cur = node;
+                }
+
+                if (cur.Node.Equals(target)) {
+                    var path = new T[cur.Depth + 1];
+                    for (int i = cur.Depth; i >= 0; --i) {
+                        path[i] = cur.Node;
+                        cur = cur.Prev;
+                    }
+                    return path;
+                }
+
+                open.Remove(cur);
+                clsd.Add(cur);
+
+                foreach (var adj in adjFunc(cur.Node)) {
+                    var node = new NodeInfo<T>(adj.Item1, posFunc(adj.Item1), cur, adj.Item2);
+                    var existing = clsd.FirstOrDefault(x => x.Node.Equals(adj.Item1));
+
+                    if (existing != null) {
+                        if (existing.Cost <= node.Cost) continue;
+
+                        clsd.Remove(existing);
+                        node.Heuristic = existing.Heuristic;
+                    }
+
+                    existing = open.FirstOrDefault(x => x.Node.Equals(adj.Item1));
+
+                    if (existing != null) {
+                        if (existing.Cost <= node.Cost) continue;
+
+                        open.Remove(existing);
+                        node.Heuristic = existing.Heuristic;
+                    } else {
+                        node.CalculateHeuristic(targPos);
+                    }
+
+                    open.Add(node);
+                }
+            }
+
+            return null;
         }
     }
 }

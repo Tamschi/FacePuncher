@@ -105,6 +105,9 @@ namespace FacePuncher.Entities
             }
         }
 
+        private static Dictionary<String, ClassInfo> _sEntCtors
+            = new Dictionary<string, ClassInfo>();
+
         /// <summary>
         /// Static constructor for Entity.
         /// </summary>
@@ -140,9 +143,6 @@ namespace FacePuncher.Entities
                 }
             });
         }
-
-        private static Dictionary<String, ClassInfo> _sEntCtors
-            = new Dictionary<string, ClassInfo>();
 
         /// <summary>
         /// Register an entity class.
